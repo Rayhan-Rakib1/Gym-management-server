@@ -1,0 +1,98 @@
+model Trainer {
+  id                    String    @id @default(uuid())
+  userId                String    @unique
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  employeeId            String    @unique
+  experienceYears       Int       @default(0)
+  certifications        String[]
+  bio                   String?
+  languages             String[]  @default(["Bangla", "English"])
+  
+  // Performance Metrics
+  successRate           Float     @default(0) // percentage
+  totalClients          Int       @default(0)
+  currentClients        Int       @default(0)
+  maxCapacity           Int       @default(20)
+  rating                Float     @default(0)
+  reviewCount           Int       @default(0)
+  
+  // Employment
+  joinedDate            DateTime  @default(now())
+  salary                Float?
+  isAvailable           Boolean   @default(true)
+  
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  
+  // Relations
+  specializations       TrainerSpecialization[]
+  availability          TrainerAvailability[]
+  members               Member[]
+  classes               Class[]
+  workoutPlans          WorkoutPlan[]
+  reviews               TrainerReview[]
+  aiTrainerProfile      AITrainerProfile?
+  aiRecommendations     AIRecommendation[]
+  aiTrainingData        AITrainingData[]
+  
+  @@index([employeeId])
+  @@index([rating])
+}
+
+model TrainerSpecialization {
+  id                String          @id @default(uuid())
+  trainerId         String
+  trainer           Trainer         @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  
+  specialization    Specialization
+  proficiencyLevel  Int             @default(5) // 1-10 scale
+  yearsOfExperience Int             @default(0)
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  @@unique([trainerId, specialization])
+}
+
+model TrainerAvailability {
+  id            String      @id @default(uuid())
+  trainerId     String
+  trainer       Trainer     @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  
+  dayOfWeek     DayOfWeek
+  startTime     String      // Format: "09:00"
+  endTime       String      // Format: "17:00"
+  isAvailable   Boolean     @default(true)
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  @@unique([trainerId, dayOfWeek, startTime])
+}
+
+// ============================================
+// REVIEWS & RATINGS
+// ============================================
+
+model TrainerReview {
+  id            String    @id @default(uuid())
+  trainerId     String
+  trainer       Trainer   @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  
+  memberId      String
+  member        Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  rating        Int       // 1-5
+  comment       String?
+  tags          String[]  // ["Professional", "Motivating", "Knowledgeable"]
+  
+  isVerified    Boolean   @default(false)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@unique([trainerId, memberId])
+  @@index([trainerId])
+  @@index([rating])
+}

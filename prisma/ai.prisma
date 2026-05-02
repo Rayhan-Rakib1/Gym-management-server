@@ -1,0 +1,106 @@
+
+
+model AIMemberProfile {
+  id                      String    @id @default(uuid())
+  memberId                String    @unique
+  member                  Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  age                     Int?
+  bmi                     Float?
+  
+  fitnessGoals            String[]
+  healthConditions        String[]
+  experienceLevel         WorkoutExperience
+  preferredWorkoutTypes   String[]
+  
+  weeklyFrequency         Int
+  preferredTime           PreferredTime?
+  
+  // Additional preferences (JSON for flexibility)
+  additionalPreferences   Json?
+  
+  lastUpdated             DateTime  @default(now())
+  
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+}
+
+model AITrainerProfile {
+  id                      String    @id @default(uuid())
+  trainerId               String    @unique
+  trainer                 Trainer   @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  
+  specializations         String[]
+  expertiseLevel          String[]  // ["beginner", "advanced"]
+  
+  successRate             Float     @default(0)
+  averageRating           Float     @default(0)
+  totalClientsHandled     Int       @default(0)
+  
+  clientAgeGroups         String[]  // ["18-25", "26-35"]
+  clientGoalsHandled      String[]
+  
+  // Strength areas (JSON for ML features)
+  strengthAreas           Json?
+  
+  lastUpdated             DateTime  @default(now())
+  
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+}
+
+model AIRecommendation {
+  id                      String              @id @default(uuid())
+  memberId                String
+  member                  Member              @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  trainerId               String
+  trainer                 Trainer             @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  
+  matchScore              Float               // 0-100
+  matchReasons            Json                // Detailed reasons
+  
+  // Snapshots for ML training
+  memberProfileSnapshot   Json
+  trainerProfileSnapshot  Json
+  
+  status                  RecommendationStatus @default(PENDING)
+  
+  recommendedAt           DateTime            @default(now())
+  respondedAt             DateTime?
+  
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  
+  @@unique([memberId, trainerId])
+  @@index([memberId])
+  @@index([trainerId])
+}
+
+model AITrainingData {
+  id                      String    @id @default(uuid())
+  memberId                String
+  member                  Member    @relation(fields: [memberId], references: [id])
+  
+  trainerId               String
+  trainer                 Trainer   @relation(fields: [trainerId], references: [id])
+  
+  matchScore              Float
+  
+  goalAchieved            Boolean   @default(false)
+  achievementPercentage   Float     @default(0)
+  durationDays            Int
+  memberSatisfaction      Int?      // 1-5
+  
+  memberFeedback          String?
+  reasonForSwitch         String?
+  
+  // Performance metrics (JSON for flexibility)
+  performanceMetrics      Json?
+  
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  
+  @@index([memberId])
+  @@index([trainerId])
+}

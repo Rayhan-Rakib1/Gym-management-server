@@ -1,0 +1,226 @@
+// ============================================
+// ATTENDANCE MANAGEMENT
+// ============================================
+
+model Attendance {
+  id            String    @id @default(uuid())
+  memberId      String
+  member        Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  checkInTime   DateTime  @default(now())
+  checkOutTime  DateTime?
+  date          DateTime  @default(now()) @db.Date
+  
+  notes         String?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@unique([memberId, date])
+  @@index([date])
+  @@index([memberId])
+}
+
+// ============================================
+// CLASS MANAGEMENT
+// ============================================
+
+model Class {
+  id            String      @id @default(uuid())
+  name          String
+  description   String?
+  trainerId     String
+  trainer       Trainer     @relation(fields: [trainerId], references: [id])
+  
+  classType     ClassType
+  capacity      Int         @default(20)
+  duration      Int         // in minutes
+  isActive      Boolean     @default(true)
+  
+  imageUrl      String?
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  // Relations
+  schedules     ClassSchedule[]
+  bookings      ClassBooking[]
+  
+  @@index([trainerId])
+  @@index([isActive])
+}
+
+model ClassSchedule {
+  id            String      @id @default(uuid())
+  classId       String
+  class         Class       @relation(fields: [classId], references: [id], onDelete: Cascade)
+  
+  dayOfWeek     DayOfWeek
+  startTime     String      // Format: "09:00"
+  endTime       String      // Format: "10:00"
+  isRecurring   Boolean     @default(true)
+  
+  // For specific date classes
+  specificDate  DateTime?   @db.Date
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  // Relations
+  bookings      ClassBooking[]
+  
+  @@index([classId])
+}
+
+model ClassBooking {
+  id            String        @id @default(uuid())
+  classId       String
+  class         Class         @relation(fields: [classId], references: [id], onDelete: Cascade)
+  
+  scheduleId    String
+  schedule      ClassSchedule @relation(fields: [scheduleId], references: [id])
+  
+  memberId      String
+  member        Member        @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  bookingDate   DateTime      @db.Date
+  status        BookingStatus @default(CONFIRMED)
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  @@unique([scheduleId, memberId, bookingDate])
+  @@index([memberId])
+  @@index([classId])
+  @@index([bookingDate])
+}
+
+// ============================================
+// WORKOUT & DIET MANAGEMENT
+// ============================================
+
+model WorkoutPlan {
+  id            String      @id @default(uuid())
+  memberId      String
+  member        Member      @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  trainerId     String
+  trainer       Trainer     @relation(fields: [trainerId], references: [id])
+  
+  planName      String
+  description   String?
+  startDate     DateTime    @db.Date
+  endDate       DateTime    @db.Date
+  
+  goals         String[]
+  notes         String?
+  isActive      Boolean     @default(true)
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  // Relations
+  exercises     Exercise[]
+  dietPlan      DietPlan?
+  
+  @@index([memberId])
+  @@index([trainerId])
+  @@index([isActive])
+}
+
+model Exercise {
+  id              String      @id @default(uuid())
+  workoutPlanId   String
+  workoutPlan     WorkoutPlan @relation(fields: [workoutPlanId], references: [id], onDelete: Cascade)
+  
+  dayOfWeek       DayOfWeek
+  exerciseName    String
+  sets            Int
+  reps            Int
+  weight          Float?      // in kg
+  restTime        Int?        // in seconds
+  
+  videoUrl        String?
+  instructions    String?
+  
+  orderIndex      Int         @default(0)
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  @@index([workoutPlanId])
+}
+
+model DietPlan {
+  id              String      @id @default(uuid())
+  workoutPlanId   String      @unique
+  workoutPlan     WorkoutPlan @relation(fields: [workoutPlanId], references: [id], onDelete: Cascade)
+  
+  breakfast       String?
+  midMorning      String?
+  lunch           String?
+  evening         String?
+  dinner          String?
+  
+  totalCalories   Int?
+  proteinGrams    Float?
+  carbsGrams      Float?
+  fatsGrams       Float?
+  
+  waterIntake     String?     // "3-4 liters"
+  supplements     String?
+  notes           String?
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+// ============================================
+// PROGRESS TRACKING
+// ============================================
+
+model BodyMetric {
+  id            String    @id @default(uuid())
+  memberId      String
+  member        Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  recordDate    DateTime  @default(now()) @db.Date
+  
+  weight        Float?
+  bmi           Float?
+  bodyFat       Float?
+  muscleMass    Float?
+  
+  // Measurements in cm
+  chest         Float?
+  waist         Float?
+  hips          Float?
+  biceps        Float?
+  thighs        Float?
+  
+  notes         String?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@unique([memberId, recordDate])
+  @@index([memberId])
+}
+
+model ProgressPhoto {
+  id            String    @id @default(uuid())
+  memberId      String
+  member        Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  photoDate     DateTime  @default(now()) @db.Date
+  imageUrl      String
+  photoType     PhotoType
+  
+  notes         String?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@index([memberId])
+  @@index([photoDate])
+}

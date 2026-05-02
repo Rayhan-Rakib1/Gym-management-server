@@ -1,0 +1,40 @@
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  name          String
+  phone         String?   @unique
+  role          Role      @default(MEMBER)
+  profileImage  String?
+  isActive      Boolean   @default(true)
+  isVerified    Boolean   @default(false)
+  needPasswordChange Boolean @default(false)
+  resetToken         String?
+  verificationToken  String?
+  resetTokenExpiry   DateTime?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  member        Member?
+  trainer       Trainer?
+  admin         Admin?
+  
+  
+  @@index([email])
+  @@index([role])
+}
+
+model Admin {
+  id            String    @id @default(uuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  accessLevel   String    @default("full")
+  lastLogin     DateTime?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+

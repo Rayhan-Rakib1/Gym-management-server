@@ -1,0 +1,103 @@
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  TRAINER
+  MEMBER
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum WorkoutExperience {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum PreferredTime {
+  MORNING
+  AFTERNOON
+  EVENING
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  BKASH
+  NAGAD
+  SSLCOMMERZ
+  STRIPE
+}
+
+enum PaymentStatus {
+  PAID
+  PENDING
+  OVERDUE
+  CANCELLED
+  REFUNDED
+}
+
+enum ClassType {
+  YOGA
+  ZUMBA
+  CROSSFIT
+  SPINNING
+  BOXING
+  AEROBICS
+  HIIT
+  PILATES
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  WAITLIST
+}
+
+enum NotificationType {
+  PAYMENT
+  MEMBERSHIP
+  CLASS
+  ANNOUNCEMENT
+  MESSAGE
+  ALERT
+}
+
+enum Specialization {
+  WEIGHT_TRAINING
+  CARDIO
+  YOGA
+  CROSSFIT
+  PILATES
+  NUTRITION
+  REHABILITATION
+  STRENGTH_TRAINING
+  FLEXIBILITY
+  SPORTS_SPECIFIC
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum PhotoType {
+  FRONT
+  SIDE
+  BACK
+}
+
+enum RecommendationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}

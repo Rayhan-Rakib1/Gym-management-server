@@ -1,0 +1,55 @@
+model Member {
+  id                    String    @id @default(uuid())
+  userId                String    @unique
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  employeeId          String    @unique
+  dateOfBirth           DateTime?
+  gender                Gender?
+  height                Float?    // in cm
+  currentWeight         Float?    // in kg
+  targetWeight          Float?
+  bloodGroup            String?
+  emergencyContact      String?
+  emergencyContactName  String?
+  address               String?
+  
+  // Fitness Profile
+  fitnessGoals          String[]  // Array of goals
+  healthConditions      String[]  // Array of conditions
+  workoutExperience     WorkoutExperience @default(BEGINNER)
+  preferredWorkoutStyle String[]
+  weeklyFrequency       Int       @default(3)
+  preferredTime         PreferredTime?
+  
+  // Membership
+  joinDate              DateTime  @default(now())
+  currentPlanId         String?
+  currentPlan           MembershipPlan? @relation(fields: [currentPlanId], references: [id])
+  membershipStartDate   DateTime?
+  membershipEndDate     DateTime?
+  
+  // Trainer Assignment
+  assignedTrainerId     String?
+  assignedTrainer       Trainer?  @relation(fields: [assignedTrainerId], references: [id])
+  trainerAssignedDate   DateTime?
+  
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  
+  // Relations
+  payments              Payment[]
+  attendance            Attendance[]
+  workoutPlans          WorkoutPlan[]
+  bodyMetrics           BodyMetric[]
+  progressPhotos        ProgressPhoto[]
+  classBookings         ClassBooking[]
+  trainerReviews        TrainerReview[]
+  aiMemberProfile       AIMemberProfile?
+  aiRecommendations     AIRecommendation[]
+  aiTrainingData        AITrainingData[]
+  
+  @@index([employeeId])
+  @@index([userId])
+  @@index([assignedTrainerId])
+}

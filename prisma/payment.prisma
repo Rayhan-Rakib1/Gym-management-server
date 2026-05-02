@@ -1,0 +1,58 @@
+model MembershipPlan {
+  id                        String    @id @default(uuid())
+  name                      String
+  description               String?
+  durationDays              Int       // 30, 90, 180, 365
+  price                     Float
+  features                  String[]
+  personalTrainingSessions  Int       @default(0)
+  discount                  Float     @default(0)
+  isActive                  Boolean   @default(true)
+  isPopular                 Boolean   @default(false)
+  
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+  
+  // Relations
+  members                   Member[]
+  payments                  Payment[]
+  
+  @@index([isActive])
+}
+
+model Payment {
+  id                String        @id @default(uuid())
+  memberId          String
+  member            Member        @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  
+  planId            String?
+  plan              MembershipPlan? @relation(fields: [planId], references: [id])
+  
+  amount            Float
+  discount          Float         @default(0)
+  tax               Float         @default(0)
+  finalAmount       Float
+  
+  paymentMethod     PaymentMethod
+  transactionId     String?       @unique
+  status            PaymentStatus @default(PENDING)
+  
+  paymentDate       DateTime?
+  dueDate           DateTime?
+  
+  // Payment Gateway Details
+  gatewayResponse   Json?
+  
+  // Invoice
+  invoiceNumber     String        @unique
+  invoiceUrl        String?
+  
+  notes             String?
+  
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  
+  @@index([memberId])
+  @@index([status])
+  @@index([paymentDate])
+}
