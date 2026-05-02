@@ -5,7 +5,7 @@ import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import notFound from './app/middlewares/notFound';
 import config from './config';
 import dotenv from 'dotenv';
-import router from './app/routes';
+import router from './app/routes';;
 
 dotenv.config();
 
