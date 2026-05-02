@@ -12,7 +12,7 @@ import { attendanceRoutes } from '../modules/attendance/attendance.route';
 import { BookingRoutes } from '../modules/Booking/booking.route';
 import { WorkoutPlanRoutes } from '../modules/Workout/workout.route';
 import { ReviewRoutes } from '../modules/Review/review.route';
-// import { SettingsRoutes } from '../modules/Settings/settings.route'; // TODO: Fix settings service to match schema
+import { SettingsRoutes } from '../modules/Settings/settings.route'; // TODO: Fix settings service to match schema
 
 const router = express.Router();
 
